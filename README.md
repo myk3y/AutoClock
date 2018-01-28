@@ -1,5 +1,8 @@
 # AutoClock
 
+
+![WeMos](https://github.com/myk3y/AutoClock/blob/master/Screen%20Shot%202018-01-27%20at%207.47.28%20PM.png)
+
 A simple internet-enabled clock driven by NTP and GeoIP to give an automatic offset from UTP for your location.
 
 My wife bought a clock that seems to lose about ten minutes a day and is constantly adjusting it, and it drove me bonkers. The clock maker, who will remain nameless (but Bush Electronics seems so appropriate for a clock maker that's clocks don't keep even close to the correct time... https://en.wikipedia.org/wiki/Bush_(brand)) has made my days a constant quest for the correct time - I think I have developed Chronophobia.
