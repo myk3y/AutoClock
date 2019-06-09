@@ -22,3 +22,5 @@ the Mob and seem to not have sent me one single piece of spam in the last year.
 You will need to sign up for an API with https://timezonedb.com but it's more to track you don't abuse the system than 
 to assist any Nigerian princes looking to get a partner or to help them repatriate the millions of dollars they have stuck
 in the bank.
+
+### 1.8.9 June 2019
