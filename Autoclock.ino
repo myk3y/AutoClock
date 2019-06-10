@@ -26,6 +26,13 @@
  * Distributed as-is; no warranty implied or given.
  */
 
+ /*
+  * Mar 2, 2018 added a Digital Display mode with either 24hr display or AM/PM display
+  * LeRoy Miller, kd8bxp 
+  * https://github.com/kd8bxp
+  * 
+  */
+  
 #include <NTPClient.h>                  // NTP time client
 #include <ESP8266WiFi.h>                // ESP8266 WiFi library
 #include <WiFiManager.h>                // Smart WiFi Manager to handle networking - genius! https://github.com/tzapu/WiFiManager
@@ -35,7 +42,11 @@
 #include<TimeLib.h>                     // Advanced time functions.
 #include <Wire.h>                       // I2C functions
 #include <SFE_MicroOLED.h>              // Include the SFE_MicroOLED  library
-#define KEY "XXXXXXXXXXX"               // timezonedb.com API Key
+#define KEY ""               // timezonedb.com API Key
+
+
+#define DIGITAL 1 //1 for a digital display, 0 for analog
+#define USE24HR 0 //0 for AM/PM, 1 for Military Time/24 HR time Only applys to a digital Display
 
 //////////////////////////
 // WeMos OLED Definition //
@@ -47,6 +58,8 @@ MicroOLED oled(PIN_RESET, DC_JUMPER);   // I2C
 
 char urlData[180];                      //array for holding complied query URL
 int  offset;                            // local UTC offset in seconds
+int ampmflag;                           //used to display AMPM 
+int toggleColon = 1;                    //used for digital Display to flash colons
 
 // Global variables for the clock face
 
@@ -100,8 +113,6 @@ void setup()
   initClockVariables();
   
   oled.clear(ALL);
-  drawFace();
-  drawArms(hour(), minute(), second());
   oled.display(); // display the memory buffer drawn
 }
 
@@ -109,10 +120,43 @@ void loop()
 {   delay(100);         // Allow ESP to do housekeeping
                         // Draw the clock:
     oled.clear(PAGE);   // Clear the buffer
-    drawFace();         // Draw the face to the buffer
+    if (DIGITAL) { digitalDisplay(hour(),minute(),second()); } else {
+     drawFace();         // Draw the face to the buffer
     drawArms(hour(), minute(), second());  // Draw arms to the buffer
+    }
+      
     oled.display();     // Draw the memory buffer
   
+}
+
+void digitalDisplay(int h, int m, int s) {
+  
+  if (USE24HR) {
+    oled.setCursor(10,22);
+    oled.print(h);
+    ampmflag = 0; 
+  } else {
+    oled.setCursor(5,22);
+    h = h - 12;
+    ampmflag = 1;
+    oled.print(h);
+  }
+  if (toggleColon == 1) { oled.print(":"); } else { oled.print(" "); }
+  if (m < 10) {
+    oled.print("0");
+    oled.print(m);
+  } else {
+    oled.print(m);
+  }
+  if (toggleColon == 1) { oled.print(":"); } else { oled.print(" "); }
+  if (s < 10) {
+    oled.print("0");
+    oled.print(s);
+  } else { oled.print(s); }
+  if(!USE24HR) {
+  if (ampmflag == 1) {oled.print(" P"); } else { oled.print(" A"); }
+  }
+  toggleColon = !toggleColon;
 }
 
 void getIPtz() { // pull timezone data from ip-api.com and create URL string to query http://api.timezonedb.com
